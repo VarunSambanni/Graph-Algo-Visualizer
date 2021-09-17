@@ -1,0 +1,249 @@
+body{
+  margin: 0em;
+  background-color: rgb(235, 235, 235);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.navbar{
+  height: 5em;
+  background-color: rgb(71, 64, 64);
+  border: 1px solid black;
+  box-sizing: border-box;
+
+}
+
+
+.navbar-list{
+  display: flex ;
+  justify-content: left;
+  list-style-type: none;
+  box-sizing: border-box;
+}
+
+.navbar-component{
+  margin-right: 1em;
+  font-size: 3rem;
+  font-weight: 400;
+  color: rgb(255, 255, 255);
+}
+
+.navbar-component:hover{
+  color: rgb(255, 220, 176); 
+  transition: 0s;
+  cursor: pointer;
+}
+
+.current-tab {
+  transition: 2s;
+  border-bottom: 7px solid rgb(115, 115, 255);
+  animation-name: current_tab;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+
+}
+
+@keyframes current_tab {
+  0%{
+    border-bottom: 7px solid rgb(116, 72, 72);
+  }
+  100%{
+    border-bottom: 7px solid rgb(115, 115, 255);
+  }
+}
+
+
+.header{
+  height: 4em;
+  box-sizing: border-box;
+  background-color: rgb(201, 201, 201);
+  display: flex;
+  flex-direction: row;
+  padding-top: 0.5em;
+  list-style-type: none;
+  justify-content: left;
+  box-sizing: border-box;
+  border: 1px solid black;
+  width: 100%;
+}
+
+.heading{
+  margin-left: 50%;
+  margin-right: 50%;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+  display: inline-block;
+}
+
+.minDist{
+  font-weight: 600;
+  margin-left: 45em;
+  position: absolute;
+}
+
+.block-1 {
+  height: 1.2em;
+  width: 1.2em;
+  background-color: lightblue;
+  border: 0.5px solid green;
+}
+
+.block-0 {
+  height: 1.2em;
+  width: 1.2em;
+  border: 0.5px solid black;
+  background-color: black;
+}
+
+.block-start{
+  height: 1.2em;
+  width: 1.2em;
+  border: 0.5px solid black;
+  text-align: center;
+  background-color: green;
+}
+
+.block-end{
+  height: 1.2em;
+  width: 1.2em;
+  border: 0.5px solid black;
+  text-align: center;
+  background-color: blue;
+}
+
+
+.App {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  box-sizing: border-box;
+  padding: 0.75em;
+}
+
+.button {
+  height: 2em;
+  width: 4em;
+  background-color: lightcyan;
+  font-size: 0.85rem;
+  margin-bottom: 1em;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.button:hover{
+  transition: 0.2s;
+  background-color: rgb(0, 185, 185);
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+}
+.path-node {
+  height: 1.2em;
+  width: 1.2em;
+  animation-name: path;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 10;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+  border: 0.5px solid black;
+}
+
+@keyframes path {
+  0% {
+
+    background-color: white;
+  }
+  50% {
+
+    background-color: aquamarine;
+  }
+  100% {
+
+    background-color: turquoise;
+  }
+}
+
+
+.blocks {
+  margin: 8em auto;
+  border: 1px solid black;
+  width: 22em;
+  height: 22em;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: 5em;
+}
+
+.button {
+  animation-name: enter;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+  transform: translateX(4em);
+  font-size: 1.5rem;
+  margin-right: 1em;
+  border-radius: 0.2em ;
+  transform: scale(1.2);
+
+  width: fit-content;
+}
+
+@keyframes enter {
+  0%{
+    transform: translateX(-10em);
+  }
+  100%{
+    transform: translateX(0em);
+  }
+}
+
+.Wrapper {      /*Check*/
+  max-width: 80%;
+  margin: auto;
+}
+.rowWrapper {
+  display: flex;
+}
+
+.node {
+  height: 1.2em;
+  width: 1.2em;
+  border: 0.5px solid black;
+  text-align: center;
+  background-color: lightblue;
+}
+
+.empty {
+  font-size: 1.5rem;
+  margin-right: 1em;
+  border-radius: 0.2em ;
+  transition: 0.4s ease-in-out;
+  transform: scale(1.2);
+
+  width: fit-content;
+  animation-name: vanish;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+
+}
+
+@keyframes vanish {
+  100%{
+      transform: translateX(-20em);
+  }
+
+}
