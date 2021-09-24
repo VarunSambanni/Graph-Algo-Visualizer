@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import { BFS } from './BFS'
 const ROW = 40;
@@ -14,9 +14,10 @@ function App() {
   const [cnt, setCnt] = useState(0);
   const [clearGrid, setClearGrid] = useState(false);
   const [algo, setAlgo] = useState('BFS');
-  const [tab, setTab] = useState('BFS');
   const minDist = useRef(null);
 
+  var AddedBlocks = false ;
+  var enableClickEvents = true ;
   var vis = Array.from(Array(ROW), () => Array(COL).fill(false));
   var dist = Array.from(Array(ROW), () => Array(COL).fill(0));
   var grid = Array.from(Array(ROW), () => Array(COL).fill(1));
@@ -101,27 +102,23 @@ function App() {
       BFS(NODE_START_ROW, NODE_START_COL);
     }
   }
-  console.log("GRID: ")
-  console.log(grid);
-  console.log("AFTER BFS CALL, VIS: ")
-  console.log(pos);
+
   const Node = ({ coords }) => {
     if (grid[coords[0]][coords[1]] === 0) {
-      return <div className="block-0" id={`node-${coords[0]}-${coords[1]}`}></div>
+      return <div className="block-0" id={`node-${coords[0]}-${coords[1]}`} ></div>
     }
     else if (coords[0] === NODE_START_ROW && coords[1] === NODE_START_COL) {
       return <div className="block-start" id={`node-${coords[0]}-${coords[1]}`}></div>
     }
     else if (coords[0] === NODE_END_ROW && coords[1] === NODE_END_COL) {
-      return <div className="block-end" id={`node-${coords[0]}-${coords[1]}`}></div>
+      return <div className="block-end" id={`node-${coords[0]}-${coords[1]}`} ></div>
     }
     else {
-      return <div className="node" id={`node-${coords[0]}-${coords[1]}`}></div>
+      return <div className="node" id={`node-${coords[0]}-${coords[1]}`} ></div>
     }
 
   }
   const GridWithNodes = () => {
-
     return <>
       <div  >
         {
@@ -129,7 +126,7 @@ function App() {
             return <>{
               <div key={rowIndex} className="rowWrapper">
                 {row.map((col, colIndex) => {
-                  return <Node key={colIndex} coords={[rowIndex, colIndex]} />
+                  return <Node key={colIndex} coords={[rowIndex, colIndex] }  />
                 })}
               </div>
             }
@@ -141,8 +138,81 @@ function App() {
       </div>
     </>
   }
+  var clickFlag = 0 ;
+  var keyFlag = 0 ; 
+  // document.addEventListener('keydown', ()=>keyFlag=1);
+  // document.addEventListener('keyup', ()=>keyFlag=0);
+  document.addEventListener('click', () => {
+    if (keyFlag === 1) {
+      keyFlag = 0 ;
+    }
+    else{
+      keyFlag = 1 ;
+    }
+  })
+  const addBlocksHandler = (e) =>{
+      console.log("EVENT ID", e.target.id);
+      if (e.target.id[0] === 'n' && keyFlag === 1){
+        var x ='', y ='' ;
+        var string = e.target.id ;
+        var count = 0 ;
+        for (let i = 0; i < string.length; i++){
+          if (string[i] === '-'){
+            count += 1 ; 
+          }
+          if(48 <= string.charCodeAt(i) <= 58){
+            if (count === 1 && string[i] !== '-')
+              x += string[i] ;
+            }
+            if (count === 2 && string[i] !== '-'){
+              y += string[i] ;
+            }
+        }
 
-  const startSim = () => {
+        if (clickFlag === 0){
+          if ( e.target.className === 'node')
+            e.target.className = 'node';
+          else if (e.target.className === ' block-start')
+            e.target.className = ' block-start';
+          else if (e.target.className === ' block-end') {
+            e.target.className = ' block-end';
+          }
+        }
+        else{
+          grid[Number(x)][Number(y)] = 0 ; 
+            if (e.target.className === 'node'){
+            e.target.className = 'added-block';
+          }
+        }
+      }
+  }
+  const AddBlocks = useCallback(() => {
+    keyFlag = 1 ;
+    AddedBlocks = true ;
+    if (clickFlag === 0){
+      document.getElementById('add-blocks-button').className = 'button selected' ;
+      document.querySelector("#grid").addEventListener("mouseover", (e) =>addBlocksHandler(e)) ;
+      document.querySelector("#grid").addEventListener("click", (e) => addBlocksHandler(e)) ;
+      clickFlag = 1 ;
+    }else{
+        document.getElementById('add-blocks-button').className = 'button' ;
+        clickFlag = 0 ; 
+    }
+    }
+  )
+    const startSim = () => {
+    enableClickEvents = false ;
+    if(AddedBlocks === true){
+        pos = [] ;
+        vis = Array.from(Array(ROW), () => Array(COL).fill(false));
+        dist = Array.from(Array(ROW), () => Array(COL).fill(0));
+        if (algo === 'BFS')
+          BFS(NODE_START_ROW, NODE_START_COL);
+        else
+          DFS(NODE_START_ROW, NODE_START_COL);
+    }
+    console.log("GRID: From startSim") ;
+    console.log(grid);
     var frame;
     if (algo === 'BFS') {
       frame = 4;
@@ -150,11 +220,13 @@ function App() {
     else {
       frame = 6;
     }
+
     console.log("POS: ", pos);
     console.log("MIN DIST: ", dist[NODE_END_ROW][NODE_END_COL])
-    document.getElementById(`start-button`).className = "empty";
-    document.getElementById(`reset-button`).className = "empty";
-    document.getElementById(`clear-grid-button`).className = "empty";
+    // document.getElementById(`start-button`).className = "empty";
+    // document.getElementById(`reset-button`).className = "empty";
+    // document.getElementById(`clear-grid-button`).className = "empty";
+    // document.getElementById(`add-blocks-button`).className = "empty";
     for (let i = 0; i < pos.length; i++) {
       if (pos[i][0] === NODE_START_ROW && pos[i][1] === NODE_START_COL) {
         continue;
@@ -164,14 +236,15 @@ function App() {
       }
       setTimeout(() => {
         document.getElementById(`node-${pos[i][0]}-${pos[i][1]}`).className = "path-node";
-        console.log(i);
-        console.log('POS.length: ', pos.length);
+
         if (i === pos.length - 3) {
-          console.log("YEA DONE");
           document.getElementById(`start-button`).className = "button";
           document.getElementById(`reset-button`).className = "button";
           document.getElementById(`clear-grid-button`).className = "button";
-          if (minDist === 0) {
+          document.getElementById(`add-blocks-button`).className = "button";
+          enableClickEvents = true ;
+          console.log('MIN DIST: ', minDist);
+          if (dist[NODE_END_ROW][NODE_END_COL] === 0) {
             minDist.current.innerText = `Min Distance: -1`;
           }
           else {
@@ -190,12 +263,14 @@ function App() {
   }
 
   const clearGridHandler = () => {
+    AddedBlocks = false ;
+    keyFlag = 0 ;
+    clickFlag = 0 ;
     setClearGrid(true);
     minDist.current.innerText = `Min Distance: `;
     setCnt(cnt => cnt + 1);
 
   }
-
 
   return (<>
     <div className="container">
@@ -207,16 +282,19 @@ function App() {
       </div>
       <div>
         <ul className="header">
-          <li><button className="button" id="start-button" onClick={() => { startSim() }}>Start</button></li>
-          <li><button className="button" id="reset-button" onClick={() => { renderPage() }}>Randomize</button></li>
-          <li> <button className="button" id="clear-grid-button" onClick={() => { clearGridHandler() }}>Clear Grid</button></li>
+          <li><button className="button" id="start-button" onClick={() => { enableClickEvents && startSim() }}>Start</button></li>
+          <li><button className="button" id="reset-button" onClick={() => { enableClickEvents && renderPage() }}>Randomize</button></li>
+          <li> <button className="button" id="clear-grid-button" onClick={() => { enableClickEvents && clearGridHandler() }}>Clear Grid</button></li>
+          <li> <button className="button" id="add-blocks-button" onClick={() => {AddBlocks()}}>AddBlocks</button></li>
+
           <h2 ref={minDist} className="minDist">Min Distance: </h2>
         </ul>
       </div>
-      <div className="App">
-        <GridWithNodes />
+      <div id = "grid" className="App">
+        <GridWithNodes  />
       </div>
     </div>
+    
   </>
   );
 
