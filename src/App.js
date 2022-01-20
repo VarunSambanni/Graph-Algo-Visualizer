@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
-import { BFS } from './BFS'
-const ROW = 40;
+import BFS from './BFS'
+import DFS from './DFS'
+const ROW = 30;
 const COL = 72;
 
 const NODE_START_ROW = 10;
 const NODE_START_COL = 10;
 const NODE_END_ROW = ROW - 1;
 const NODE_END_COL = COL - 1;
-
 
 function App() {
   const [cnt, setCnt] = useState(0);
@@ -24,17 +24,19 @@ function App() {
   var pos = [];
   var dRow = [-1, 0, 1, 0];
   var dCol = [0, 1, 0, -1];
-
-  function isValid(row, col) {
-    if (row < 0 || col < 0
-      || row >= ROW || col >= COL)
-      return false;
-
-    if (vis[row][col] || grid[row][col] === 0)
-      return false;
-    return true;
+  var pred = [] ;
+  var path = [] ; 
+  for(let i = 0 ; i < ROW; i++)
+  {
+    var temp = [] ; 
+    for(let j = 0 ; j < COL; j++)
+    {
+      temp.push([-1, -1]) ; 
+    }
+    pred.push(temp) ; 
   }
   //BFS
+  /*
   function BFS(row, col) {
     var q = [];
 
@@ -62,9 +64,9 @@ function App() {
       }
     }
   }
-
-
+  */
   //DFS 
+  /*
   function DFS(row, col) {
     vis[row][col] = true;
     pos.push([row, col]);
@@ -72,7 +74,8 @@ function App() {
       if (isValid(row + dRow[i], col + dCol[i]))
         DFS(row + dRow[i], col + dCol[i]);
     }
-  }
+  }*/
+
   //GRID RANDOMIZER 
   if (clearGrid === false) {
     for (var i = 0; i < ROW; i++) {
@@ -96,10 +99,10 @@ function App() {
 
   switch (algo) {
     case 'DFS': {
-      DFS(NODE_START_ROW, NODE_START_COL);
+      path = DFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos);
     }
     case 'BFS': {
-      BFS(NODE_START_ROW, NODE_START_COL);
+      BFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos, dist, pred, path);
     }
   }
 
@@ -151,7 +154,6 @@ function App() {
     }
   })
   const addBlocksHandler = (e) =>{
-      console.log("EVENT ID", e.target.id);
       if (e.target.id[0] === 'n' && keyFlag === 1){
         var x ='', y ='' ;
         var string = e.target.id ;
@@ -200,62 +202,112 @@ function App() {
     }
     }
   )
-    const startSim = () => {
-    enableClickEvents = false ;
-    if(AddedBlocks === true){
-        pos = [] ;
-        vis = Array.from(Array(ROW), () => Array(COL).fill(false));
-        dist = Array.from(Array(ROW), () => Array(COL).fill(0));
-        if (algo === 'BFS')
-          BFS(NODE_START_ROW, NODE_START_COL);
-        else
-          DFS(NODE_START_ROW, NODE_START_COL);
-    }
-    console.log("GRID: From startSim") ;
-    console.log(grid);
-    var frame;
-    if (algo === 'BFS') {
-      frame = 4;
-    }
-    else {
-      frame = 6;
-    }
 
-    console.log("POS: ", pos);
-    console.log("MIN DIST: ", dist[NODE_END_ROW][NODE_END_COL])
-    // document.getElementById(`start-button`).className = "empty";
-    // document.getElementById(`reset-button`).className = "empty";
-    // document.getElementById(`clear-grid-button`).className = "empty";
-    // document.getElementById(`add-blocks-button`).className = "empty";
-    for (let i = 0; i < pos.length; i++) {
-      if (pos[i][0] === NODE_START_ROW && pos[i][1] === NODE_START_COL) {
-        continue;
-      }
-      if (pos[i][0] === NODE_END_ROW && pos[i][1] === NODE_END_COL) {
-        continue;
-      }
-      setTimeout(() => {
-        document.getElementById(`node-${pos[i][0]}-${pos[i][1]}`).className = "path-node";
+  
+  const startSim = () => {
+  enableClickEvents = false ;
+  if(AddedBlocks === true){
+      pos = [] ;
+      path = [] ;
 
-        if (i === pos.length - 3) {
-          document.getElementById(`start-button`).className = "button";
-          document.getElementById(`reset-button`).className = "button";
-          document.getElementById(`clear-grid-button`).className = "button";
-          document.getElementById(`add-blocks-button`).className = "button";
-          enableClickEvents = true ;
-          console.log('MIN DIST: ', minDist);
-          if (dist[NODE_END_ROW][NODE_END_COL] === 0) {
-            minDist.current.innerText = `Min Distance: -1`;
-          }
-          else {
-            minDist.current.innerText = `Min Distance: ${dist[NODE_END_ROW][NODE_END_COL]}`;
-          }
+      pred = [] ;
+      for(let i = 0 ; i < ROW; i++)
+      {
+        var temp = [] ; 
+        for(let j = 0 ; j < COL; j++)
+        {
+          temp.push([-1, -1]) ; 
         }
-
-      }, frame * i); //Frame Rate
-
+        pred.push(temp) ; 
+      }
+      vis = Array.from(Array(ROW), () => Array(COL).fill(false));
+      dist = Array.from(Array(ROW), () => Array(COL).fill(0));
+      if (algo === 'BFS'){
+        BFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos, dist, pred, path);
+      }
+      else{   
+        path = DFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos);
+      }
+  }
+  var frame;
+  if (algo === 'BFS') {
+    frame = 4;
+  }
+  else {
+    frame = 5;
+  }
+  var distance = -1 ; 
+  if (algo === 'DFS' && path[path.length-1][0]  === 0 && path[path.length-1][1] === 0)
+  {
+    console.log("NOT REACHABLE ---DFS",path) ;
+    path = [] ; 
+  }
+  else if (algo === 'DFS')
+  {
+    distance = path[path.length-1][0] ; 
+  }
+  else 
+  {
+    if (dist[NODE_END_ROW][NODE_END_COL] !== 0)
+    {
+      distance = dist[NODE_END_ROW][NODE_END_COL] ; 
     }
   }
+  for (let i = 0; i < pos.length; i++) {
+    if (pos[i][0] === NODE_START_ROW && pos[i][1] === NODE_START_COL) {
+      continue;
+    }
+    if (pos[i][0] === NODE_END_ROW && pos[i][1] === NODE_END_COL) {
+      continue;
+    }
+
+    setTimeout(() => { 
+      document.getElementById(`node-${pos[i][0]}-${pos[i][1]}`).className = "path-node";
+      if (i === pos.length - 3) {
+        document.getElementById(`start-button`).className = "button";
+        document.getElementById(`reset-button`).className = "button";
+        document.getElementById(`clear-grid-button`).className = "button";
+        document.getElementById(`add-blocks-button`).className = "button";
+        enableClickEvents = true ;
+        console.log('MIN DIST: ', minDist);
+        minDist.current.innerText = `Min Distance: ${distance}`;
+      }
+
+    }, frame * i) // Frame rate
+  }
+  let c = 1 ;
+  let d = 350 ;
+  if (algo === 'DFS')
+  {
+    d = 0.000001; 
+  }
+  var x = 1 ; 
+  for(let i = 0; i < path.length-1; i++)
+  {
+    if (algo === 'BFS')
+    {
+      x = (d/c) *(i) ; 
+    }
+    else 
+    {
+      x = 12000 ; 
+    }
+    if (path[i][0] === NODE_START_ROW && path[i][1] === NODE_START_COL) {
+      continue;
+    }
+    if (path[i][0] === NODE_END_ROW && path[i][1] === NODE_END_COL) {
+      continue;
+    }
+    setTimeout(() => {
+      if (path[i][0] === NODE_END_ROW && path[i][1] === NODE_END_COL)
+      {
+        
+      }
+      document.getElementById(`node-${path[i][0]}-${path[i][1]}`).className = "PATH-path-node";
+    }, (x)) ;//
+    c += 0.0225 ;
+  }
+}
   const renderPage = () => {
     setClearGrid(false);
     minDist.current.innerText = `Min Distance: `;
