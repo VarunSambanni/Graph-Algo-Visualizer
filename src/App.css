@@ -148,7 +148,22 @@ body {
   animation-timing-function: ease-out;
   animation-delay: 0;
   animation-direction: alternate;
-  animation-iteration-count: 10;
+  animation-iteration-count: 20;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+  border: 0.5px solid black;
+}
+
+.PATH-path-node {
+  height: 1.2em;
+  width: 1.2em;
+  background-color: blueviolet;
+  animation-name: PATH;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
   animation-fill-mode: forwards;
   animation-play-state: running;
   border: 0.5px solid black;
@@ -163,6 +178,18 @@ body {
   }
   100% {
     background-color: turquoise;
+  }
+}
+
+@keyframes PATH {
+  0% {
+    background-color: rgb(219, 180, 255);
+  }
+  500% {
+    background-color: rgb(182, 103, 255);
+  }
+  100% {
+    background-color: rgb(176, 91, 255);
   }
 }
 
