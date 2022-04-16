@@ -13,6 +13,7 @@ The app also finds the shortest path, and the minimum distance between source an
 <br />
 ![pic6](https://user-images.githubusercontent.com/87132174/156873268-d515ae55-bf09-436b-94a5-6d175dcc471f.jpg)
 <br />
+<br />
 The app also allows the user to add blocks, through which traversal is not possible, instead of using the randomize option.
 
 ![pic5](https://user-images.githubusercontent.com/87132174/156873200-b0996aba-d116-4470-b790-97606b6e5050.jpg)
