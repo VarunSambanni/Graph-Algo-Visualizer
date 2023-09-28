@@ -1,5 +1,5 @@
-const ROW = 30;
-const COL = 72;
+const ROW = 22;
+const COL = 58;
 var dRow = [-1, 0, 1, 0];
 var dCol = [0, 1, 0, -1];
 
