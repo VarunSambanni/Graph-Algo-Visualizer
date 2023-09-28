@@ -1,7 +1,7 @@
 # Graph-Algo-Visualizer
 DFS, BFS Visualizer <br/>
 [Link to the Visualizer](https://graph-algo-visualizer-lat.netlify.app/)  
-A ReactJS application to visualize graph traversal algorithms-Breadth First Search(BFS) and Depth First Search(DFS), on a 2D grid. Each cell is a node, and the traversal can be done in top, down, left, right directions only.
+A ReactJS application to visualize graph traversal algorithms-Breadth First Search(BFS), Depth First Search(DFS), and BiDirectional BFS on a 2D grid. Each cell is a node, and the traversal can be done in top, down, left, right directions only.
 
 ![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/2a981056-c20a-4681-987c-5c31570f23e1)
 <br />
