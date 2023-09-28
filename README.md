@@ -19,6 +19,6 @@ The app also finds the shortest path, and the minimum distance between source an
 ![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/b2f4750d-5da2-4df2-ba7c-d3e0ca841457)
 <br />
 <br />
-<br />
 The app also allows the user to add blocks, through which traversal is not possible, instead of using the randomize option.
+<br />
 ![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/f5f5a2a0-f793-4f22-85ac-ac1c9a21e971)
