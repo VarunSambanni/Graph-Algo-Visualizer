@@ -3,20 +3,23 @@ DFS, BFS Visualizer <br/>
 [Link to the Visualizer](https://graph-algo-visualizer-lat.netlify.app/)  
 A ReactJS application to visualize graph traversal algorithms-Breadth First Search(BFS) and Depth First Search(DFS), on a 2D grid. Each cell is a node, and the traversal can be done in top, down, left, right directions only.
 
-![pic1](https://user-images.githubusercontent.com/87132174/184636084-e480611f-ec36-4878-be75-53439c7fa7fe.png)
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/7c6ef2c0-33a2-46ca-83f6-9bb9d1b372d2)
 <br />
 The app also finds the shortest path, and the minimum distance between source and the destination nodes, as well as the distance itself.   
 
-![pic2](https://user-images.githubusercontent.com/87132174/184636180-e04a2001-69fa-4203-ae0b-18d480e7390f.png)
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/6c70fdd7-235d-4242-81d1-31ff6c589c4d)
 <br />
 <br />
-![pic3](https://user-images.githubusercontent.com/87132174/184636201-b8a1dfc3-89ae-44b3-9d04-83a713802906.png) 
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/858354ef-649f-4337-8154-a501ddeb45a2)
 <br />
 <br />
-![pic4](https://user-images.githubusercontent.com/87132174/184636237-af5dbf32-b676-470a-80fa-e1e2b6ef7609.png)
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/de1822d3-5260-48ac-8aac-1d30c31d1eea)
+<br />
+<br />
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/b2f4750d-5da2-4df2-ba7c-d3e0ca841457)
 <br />
 <br />
 <br />
 The app also allows the user to add blocks, through which traversal is not possible, instead of using the randomize option.
 <br />
-![pic5](https://user-images.githubusercontent.com/87132174/184636272-a45a38bd-d5ec-498a-a6cb-395a4dff2fa4.png)
+![image](https://github.com/VarunSambanni/Graph-Algo-Visualizer/assets/87132174/f5f5a2a0-f793-4f22-85ac-ac1c9a21e971)
