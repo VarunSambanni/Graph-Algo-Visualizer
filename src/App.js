@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import BFS from './BFS'
 import DFS from './DFS'
+import BiDirectionalBFS from "./BiDirectionalBFS"
+import SpeedIcon from '@mui/icons-material/Speed';
+import RunCircleIcon from '@mui/icons-material/RunCircle';
 
-const ROW = 30;
-const COL = 72;
+const ROW = 22;
+const COL = 58;
 
 var NODE_START_ROW = 10;
 var NODE_START_COL = 10;
@@ -29,7 +32,9 @@ function App() {
   const [cnt, setCnt] = useState(0);
   const [clearGrid, setClearGrid] = useState(false);
   const [algo, setAlgo] = useState(localStorage.getItem("algo"));
+  const [speed, setSpeed] = useState(5);
   const minDist = useRef(null);
+  const running = useRef(null);
 
   const NODE_START_ROW_ref = useRef(null);
   const NODE_START_COL_ref = useRef(null);
@@ -39,12 +44,16 @@ function App() {
   var AddedBlocks = false;
   var enableClickEvents = true;
   var vis = Array.from(Array(ROW), () => Array(COL).fill(false));
+  var vis1 = Array.from(Array(ROW), () => Array(COL).fill(false));
+  var vis2 = Array.from(Array(ROW), () => Array(COL).fill(false));
   var dist = Array.from(Array(ROW), () => Array(COL).fill(0));
   var grid = Array.from(Array(ROW), () => Array(COL).fill(1));
   var pos = [];
   var dRow = [-1, 0, 1, 0];
   var dCol = [0, 1, 0, -1];
   var pred = [];
+  var pred1 = [];
+  var pred2 = [];
   var path = [];
   for (let i = 0; i < ROW; i++) {
     var temp = [];
@@ -52,47 +61,9 @@ function App() {
       temp.push([-1, -1]);
     }
     pred.push(temp);
+    pred1.push(temp);
+    pred2.push(temp);
   }
-  //BFS
-  /*
-  function BFS(row, col) {
-    var q = [];
-
-    q.push([row, col]);
-    vis[row][col] = true;
-
-    while (q.length !== 0) {
-
-      var cell = q[0];
-      var x = cell[0];
-      var y = cell[1];
-      pos.push([x, y]);
-      q.shift();
-
-      for (var i = 0; i < 4; i++) {
-
-        var adjx = x + dRow[i];
-        var adjy = y + dCol[i];
-
-        if (isValid(adjx, adjy)) {
-          q.push([adjx, adjy]);
-          dist[adjx][adjy] = dist[x][y] + 1;
-          vis[adjx][adjy] = true;
-        }
-      }
-    }
-  }
-  */
-  //DFS 
-  /*
-  function DFS(row, col) {
-    vis[row][col] = true;
-    pos.push([row, col]);
-    for (var i = 0; i < 4; i++) {
-      if (isValid(row + dRow[i], col + dCol[i]))
-        DFS(row + dRow[i], col + dCol[i]);
-    }
-  }*/
 
   //GRID RANDOMIZER 
   if (clearGrid === false) {
@@ -113,6 +84,7 @@ function App() {
 
       }
     }
+    console.log(grid)
   }
 
   switch (algo) {
@@ -122,6 +94,10 @@ function App() {
     }
     case 'BFS': {
       BFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos, dist, pred, path, NODE_END_ROW, NODE_END_COL);
+      break;
+    }
+    case 'BiDirectionalBFS': {
+      BiDirectionalBFS(NODE_START_ROW, NODE_START_COL, vis1, vis2, grid, pos, dist, path, NODE_END_ROW, NODE_END_COL);
     }
   }
 
@@ -140,6 +116,7 @@ function App() {
     }
 
   }
+
   const GridWithNodes = () => {
     return <>
       <div  >
@@ -225,34 +202,39 @@ function App() {
 
   const startSim = () => {
     enableClickEvents = false;
+    running.current.innerText = `Running...`;
     if (AddedBlocks === true) {
       pos = [];
       path = [];
-
       pred = [];
+      pred1 = [];
+      pred2 = [];
       for (let i = 0; i < ROW; i++) {
         var temp = [];
         for (let j = 0; j < COL; j++) {
           temp.push([-1, -1]);
         }
         pred.push(temp);
+        pred1.push(temp);
+        pred2.push(temp);
       }
+
       vis = Array.from(Array(ROW), () => Array(COL).fill(false));
+      vis1 = Array.from(Array(ROW), () => Array(COL).fill(false));
+      vis2 = Array.from(Array(ROW), () => Array(COL).fill(false));
       dist = Array.from(Array(ROW), () => Array(COL).fill(0));
       if (algo === 'BFS') {
         BFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos, dist, pred, path, NODE_END_ROW, NODE_END_COL);
       }
-      else {
+      else if (algo === 'DFS') {
         path = DFS(NODE_START_ROW, NODE_START_COL, vis, grid, pos, NODE_END_ROW, NODE_END_COL);
       }
+      else {
+        BiDirectionalBFS(NODE_START_ROW, NODE_START_COL, vis1, vis2, grid, pos, dist, path, NODE_END_ROW, NODE_END_COL);
+      }
     }
-    var frame;
-    if (algo === 'BFS') {
-      frame = 4;
-    }
-    else {
-      frame = 5;
-    }
+
+
     var distance = -1;
     /*
     if (algo === 'DFS' && path[path.length - 1][0] === 0 && path[path.length - 1][1] === 0) {
@@ -267,11 +249,20 @@ function App() {
     else if (algo === 'DFS') {
       distance = path[path.length - 1][0];
     }
+    else if (algo === 'BiDirectionalBFS') {
+      distance = path.length - 1;
+    }
     else {
       if (dist[NODE_END_ROW][NODE_END_COL] !== 0) {
         distance = dist[NODE_END_ROW][NODE_END_COL];
       }
     }
+
+    if (distance === -1) {
+      enableClickEvents = true;
+      running.current.innerText = '';
+    }
+
     for (let i = 0; i < pos.length; i++) {
       if (pos[i][0] === NODE_START_ROW && pos[i][1] === NODE_START_COL) {
         continue;
@@ -289,17 +280,18 @@ function App() {
           document.getElementById(`add-blocks-button`).className = "button";
           enableClickEvents = true;
           minDist.current.innerText = `Min Distance: ${(NODE_START_ROW === NODE_END_ROW && NODE_START_COL === NODE_END_COL) ? 0 : (distance)}`;
+
         }
-      }, frame * i) // Frame rate
+      }, speed * i) // Frame rate
     }
     let c = 1;
-    let d = 350;
+    let d = 500;
     if (algo === 'DFS') {
       d = 0.000001;
     }
     var x = 1;
     for (let i = 0; i < path.length - 1; i++) {
-      if (algo === 'BFS') {
+      if (algo === 'BFS' || algo === 'BiDirectionalBFS') {
         x = (d / c) * (i);
       }
       else {
@@ -312,8 +304,12 @@ function App() {
         continue;
       }
       setTimeout(() => {
+        if (i === path.length - 3) {
+          enableClickEvents = true;
+          running.current.innerText = '';
+        }
         if (path[i][0] === NODE_END_ROW && path[i][1] === NODE_END_COL) {
-          setCnt(cnt => cnt + 1);
+          //setCnt(cnt => cnt + 1);
         }
         try {
           document.getElementById(`node-${path[i][0]}-${path[i][1]}`).className = "PATH-path-node";
@@ -323,6 +319,7 @@ function App() {
         }
       }, (x));//
       c += 0.0225;
+
     }
 
   }
@@ -373,45 +370,56 @@ function App() {
     setAlgo(newAlgo);
     localStorage.setItem("algo", newAlgo);
   }
-  return (<>
+  return (<div className='containerWrapper'>
     <div className="container">
       <div className="navbar">
         <ul className="navbar-list">
           {algo === 'BFS' ? <li className={`navbar-component current-tab }`} >BFS</li> : <li className={`navbar-component `} onClick={() => handleAlgoChange('BFS')}>BFS</li>}
           {algo === 'DFS' ? <li className={`navbar-component current-tab }`}>DFS</li> : <li className={`navbar-component `} onClick={() => handleAlgoChange('DFS')} >DFS</li>}
+          {algo === 'BiDirectionalBFS' ? <li className={`navbar-component current-tab }`}>BiDirectionalBFS</li> : <li className={`navbar-component `} onClick={() => handleAlgoChange('BiDirectionalBFS')} >BiDirectionalBFS</li>}
         </ul>
       </div>
-      <div>
+      <div className="toolBar">
         <ul className="header">
           <li><button className="button" id="start-button" onClick={() => { enableClickEvents && startSim() }}>Start</button></li>
           <li><button className="button" id="reset-button" onClick={() => { enableClickEvents && renderPage() }}>Randomize</button></li>
           <li> <button className="button" id="clear-grid-button" onClick={() => { enableClickEvents && clearGridHandler() }}>Clear Grid</button></li>
           <li> <button className="button" id="add-blocks-button" onClick={() => { AddBlocks() }}>Add Blocks</button></li>
-
-          <h2 ref={minDist} className="minDist">Min Distance: </h2>
         </ul>
+        <div ref={minDist} className="minDist">Min Distance: </div>
       </div>
-      <div className='inputCoordContainer'>
-        <div className='inputCoordWrapper'>
-          <h3 className='centerText'>Source Coord</h3>
-          <label>X:</label>
-          <input ref={NODE_START_ROW_ref} placeholder={`${NODE_START_ROW}`} className='inputCoord'></input>
-          <label>Y: </label>
-          <input ref={NODE_START_COL_ref} placeholder={`${NODE_START_COL}`} className='inputCoord'></input>
-        </div>
-        <div className='inputCoordWrapper'>
-          <h3 className='centerText'>Dest Coord</h3>
-          <label>X: </label>
-          <input ref={NODE_END_ROW_ref} placeholder={`${NODE_END_ROW}`} className='inputCoord'></input>
-          <label>Y: </label>
-          <input ref={NODE_END_COL_ref} placeholder={`${NODE_END_COL}`} className='inputCoord'></input>
-        </div>
-        <div className='inputCoordWrapper'>
-          <button className='button' style={{ marginTop: '1.5em' }} onClick={() => handleSetCoords()}>Set Coords</button>
-        </div>
-        <div className='coordsInfo' >
-          <p style={{ marginTop: '2em' }}>X : 0 - {ROW - 1} </p>
-          <p style={{ marginBottom: '0em' }}>Y : 0 - {COL - 1} </p>
+      <div className="toolBarContainer">
+
+        <div className='inputCoordContainer'>
+          <div className="runningContainer"><div ref={running}></div></div>
+          <div className='speedLabel'><SpeedIcon sx={{ marginY: '-0.20em' }} />Speed </div>
+          <select value={speed} onChange={(e) => setSpeed(e.target.value)} className='speedSelect'>
+            <option value={5}>1X</option>
+            <option value={2}>2X</option>
+            <option value={1}>4X</option>
+            <option value={0.1}>8X</option>
+          </select>
+          <div className='inputCoordWrapper'>
+            <h3 className='centerText'>Source Coord</h3>
+            <label>X:</label>
+            <input ref={NODE_START_ROW_ref} placeholder={`${NODE_START_ROW}`} className='inputCoord'></input>
+            <label>Y: </label>
+            <input ref={NODE_START_COL_ref} placeholder={`${NODE_START_COL}`} className='inputCoord'></input>
+          </div>
+          <div className='inputCoordWrapper'>
+            <h3 className='centerText'>Dest Coord</h3>
+            <label>X: </label>
+            <input ref={NODE_END_ROW_ref} placeholder={`${NODE_END_ROW}`} className='inputCoord'></input>
+            <label>Y: </label>
+            <input ref={NODE_END_COL_ref} placeholder={`${NODE_END_COL}`} className='inputCoord'></input>
+          </div>
+          <div className='inputCoordWrapper'>
+            <button className='button' style={{ marginTop: '0.8em' }} onClick={() => handleSetCoords()}>Set Coords</button>
+          </div>
+          <div className='coordsInfo' >
+            <p >X : 0 - {ROW - 1} </p>
+            <p>Y : 0 - {COL - 1} </p>
+          </div>
         </div>
       </div>
       <div id="grid" className="App">
@@ -419,7 +427,7 @@ function App() {
       </div>
     </div>
 
-  </>
+  </div>
   );
 
 }
